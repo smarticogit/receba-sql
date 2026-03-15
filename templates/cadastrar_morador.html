@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Cadastrar Morador - Receba{% endblock %}
+{% block content %}
+<h2>Cadastrar Morador</h2>
+<form method="POST" action="{{ url_for('main.cadastrar_morador_route') }}">
+    <div class="form-group">
+        <label for="nome">Nome</label>
+        <input type="text" class="form-control" id="nome" name="nome" required>
+    </div>
+    <div class="form-group">
+        <label for="torre">Torre</label>
+        <input type="text" class="form-control" id="torre" name="torre" required>
+    </div>
+    <div class="form-group">
+        <label for="ap">Apartamento</label>
+        <input type="text" class="form-control" id="ap" name="ap" required>
+    </div>
+    <div class="form-group">
+        <label for="whatsapp">WhatsApp (apenas números, com DDD)</label>
+        <input type="text" class="form-control" id="whatsapp" name="whatsapp">
+    </div>
+    <button type="submit" class="btn btn-primary">Cadastrar</button>
+</form>
+{% endblock %}

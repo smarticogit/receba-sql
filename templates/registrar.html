@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Registrar Encomenda - Receba{% endblock %}
+{% block content %}
+<h2>Registrar Encomenda</h2>
+
+<!-- Formulário de busca de morador por nome, bloco/torre e apartamento -->
+<form method="get" action="{{ url_for('main.registrar_encomenda') }}" class="mb-4">
+    <div class="form-row">
+        <div class="col-md-3 mb-2">
+            <label for="nome">Nome do Morador</label>
+            <input type="text" class="form-control" id="nome" name="nome" value="{{ nome or '' }}">
+        </div>
+        <div class="col-md-3 mb-2">
+            <label for="torre">Bloco/Torre</label>
+            <input type="text" class="form-control" id="torre" name="torre" value="{{ torre or '' }}">
+        </div>
+        <div class="col-md-3 mb-2">
+            <label for="ap">Apartamento</label>
+            <input type="text" class="form-control" id="ap" name="ap" value="{{ ap or '' }}">
+        </div>
+        <div class="col-md-3 mb-2 align-self-end">
+            <button type="submit" class="btn btn-secondary">Buscar Morador</button>
+        </div>
+    </div>
+</form>
+
+{% if mensagem %}
+    <div class="alert alert-warning">{{ mensagem }}</div>
+{% endif %}
+
+{% if moradores %}
+<!-- Formulário de registro de encomenda -->
+<form method="POST" action="{{ url_for('main.registrar_encomenda') }}" onsubmit="return validarEmpresa();">
+    <div class="form-group">
+        <label for="cod">Código do Armário/Pacote</label>
+        <input type="text" class="form-control" id="cod" name="cod" required>
+    </div>
+    <div class="form-group">
+        <label for="empresa">Empresa de Entrega</label>
+        <select class="form-control" id="empresa" name="empresa" onchange="toggleOutraEmpresa()" required>
+            {% for emp in empresas %}
+                <option value="{{ emp }}">{{ emp }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" class="form-control mt-2" id="empresa_outro" name="empresa_outro" placeholder="Informe a empresa" style="display:none;">
+    </div>
+    <div class="form-group">
+        <label for="entregador">Nome do Entregador</label>
+        <input type="text" class="form-control" id="entregador" name="entregador">
+    </div>
+    <div class="form-group">
+        {% if moradores|length == 1 %}
+            <label>Morador</label>
+            <div class="form-control-plaintext">
+                {{ moradores[0].nome }} - Torre {{ moradores[0].torre }} Ap {{ moradores[0].ap }}
+            </div>
+            <input type="hidden" name="morador_id" value="{{ moradores[0].id }}">
+        {% else %}
+            <label for="morador_id">Morador</label>
+            <select class="form-control" id="morador_id" name="morador_id" required>
+                <option value="">Selecione...</option>
+                {% for m in moradores %}
+                    <option value="{{ m.id }}">{{ m.nome }} - Torre {{ m.torre }} Ap {{ m.ap }}</option>
+                {% endfor %}
+            </select>
+        {% endif %}
+    </div>
+    <button type="submit" class="btn btn-success">Registrar</button>
+</form>
+{% endif %}
+
+<script>
+function toggleOutraEmpresa() {
+    var select = document.getElementById('empresa');
+    var other = document.getElementById('empresa_outro');
+    if (select.value === 'Outro') {
+        other.style.display = 'block';
+    } else {
+        other.style.display = 'none';
+        other.value = '';
+    }
+}
+function validarEmpresa() {
+    var select = document.getElementById('empresa');
+    var other = document.getElementById('empresa_outro');
+    if (select.value === 'Outro' && other.value.trim() === '') {
+        alert('Informe a empresa de entrega.');
+        return false;
+    }
+    return true;
+}
+</script>
+{% endblock %}
