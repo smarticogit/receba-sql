@@ -3,7 +3,6 @@
 {% block content %}
 <h2>Registrar Encomenda</h2>
 
-<!-- Formulário de busca de morador por nome, bloco/torre e apartamento -->
 <form method="get" action="{{ url_for('main.registrar_encomenda') }}" class="mb-4">
     <div class="form-row">
         <div class="col-md-3 mb-2">
@@ -29,7 +28,6 @@
 {% endif %}
 
 {% if moradores %}
-<!-- Formulário de registro de encomenda -->
 <form method="POST" action="{{ url_for('main.registrar_encomenda') }}" onsubmit="return validarEmpresa();">
     <div class="form-group">
         <label for="cod">Código do Armário/Pacote</label>
