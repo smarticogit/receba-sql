@@ -1,8 +1,8 @@
+import os
 from flask import Flask
 
 from models import db
 from controllers import get_porteiro_by_username, create_porteiro
-
 from routes import bp as main_bp
 
 app = Flask(__name__)
