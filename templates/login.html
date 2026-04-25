@@ -1,25 +1,26 @@
 {% extends 'base.html' %}
 {% block title %}Login - Receba{% endblock %}
 {% block content %}
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="text-center mb-4">
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Receba" style="max-width: 250px; width: 100%; height: auto;">
-            </div>
-            <div class="card p-4 shadow-sm">
-                <h3 class="text-center mb-4" style="color: var(--primary-color);">Acessar Sistema</h3>
-                <form method="POST" action="{{ url_for('main.login') }}">
-                    <div class="form-group">
-                        <label for="username">Usuário</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Senha</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-block">Entrar</button>
-                </form>
-            </div>
-        </div>
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="text-center mb-4">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Receba"
+        style="max-width: 250px; width: 100%; height: auto;">
     </div>
+    <div class="card p-4 shadow-sm">
+      <h3 class="text-center mb-4" style="color: var(--primary-color);">Acessar Sistema</h3>
+      <form method="POST" action="{{ url_for('main.login') }}">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Senha</label>
+          <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

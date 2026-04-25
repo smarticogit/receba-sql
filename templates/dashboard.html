@@ -1,31 +1,35 @@
 {% extends 'base.html' %}
 {% block title %}Dashboard - Receba{% endblock %}
 {% block content %}
-<h2>Encomendas Pendentes</h2>
+
+<div class="mt-4">
+  <h3><i class="bi bi-speedometer2 mr-2"></i>Dashboard</h3>
+</div>
+
 {% if pendentes %}
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>COD</th>
-                <th>Empresa</th>
-                <th>Entregador</th>
-                <th>Data Registro</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for e in pendentes %}
-            <tr>
-                <td>{{ e.uuid[:8] }}</td>
-                <td>{{ e.cod }}</td>
-                <td>{{ e.empresa }}</td>
-                <td>{{ e.entregador }}</td>
-                <td>{{ e.data_registro }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>COD</th>
+      <th>Empresa</th>
+      <th>Entregador</th>
+      <th>Data Registro</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for e in pendentes %}
+    <tr>
+      <td>{{ e.uuid[:8] }}</td>
+      <td>{{ e.cod }}</td>
+      <td>{{ e.empresa }}</td>
+      <td>{{ e.entregador }}</td>
+      <td>{{ e.data_registro }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% else %}
-    <p>Não há encomendas pendentes.</p>
+<p>Não há encomendas pendentes.</p>
 {% endif %}
 {% endblock %}

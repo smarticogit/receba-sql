@@ -1,0 +1,71 @@
+:root {
+      --primary-color: #1B3E6F;
+      --secondary-color: #83B84A;
+      --sidebar-bg: #F0F4FA;
+      --background-color: #F8FAFF;
+      --hover-color: #6B9E3B;
+    }
+
+    body {
+      background-color: var(--background-color);
+      color: var(--primary-color);
+      padding-top: 4rem;
+    }
+
+    .navbar-dark {
+      background-color: var(--primary-color) !important;
+    }
+
+    .navbar-brand img {
+      height: 40px;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 60px;
+      left: 0;
+      width: 220px;
+      height: calc(100vh - 60px);
+      background-color: var(--sidebar-bg);
+      padding-top: 1rem;
+      overflow-y: auto;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 0.5rem 1rem;
+      color: var(--primary-color);
+    }
+
+    .sidebar a:hover {
+      background-color: var(--secondary-color);
+      color: white;
+      text-decoration: none;
+    }
+
+    .content {
+      margin-left: 240px;
+      padding: 1rem;
+    }
+
+    .btn-primary {
+      background-color: var(--secondary-color);
+      border-color: var(--secondary-color);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--hover-color);
+      border-color: var(--hover-color);
+      color: #fff;
+    }
+
+    .btn-success {
+      background-color: var(--secondary-color);
+      border-color: var(--secondary-color);
+    }
+
+    .btn-success:hover {
+      background-color: var(--hover-color);
+      border-color: var(--hover-color);
+    }

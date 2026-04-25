@@ -2,25 +2,25 @@ import os
 from flask import Flask
 
 from models import db
-from controllers import get_porteiro_by_username, create_porteiro
+from controllers import get_porteiro_by_email, create_porteiro
 from routes import bp as main_bp
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'change_this_secret'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///receba.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["SECRET_KEY"] = "change_this_secret"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///receba.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
 
 with app.app_context():
     db.create_all()
-    if not get_porteiro_by_username('admin'):
-        create_porteiro('Porteiro padrão', 'admin', 'admin')
+    if not get_porteiro_by_email("admin@exemplo.com"):
+        create_porteiro("Porteiro padrão", "admin@exemplo.com", "admin")
 
 app.register_blueprint(main_bp)
 
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5001))
     app.run(host="0.0.0.0", port=port)
 
 # Para rodar localmente

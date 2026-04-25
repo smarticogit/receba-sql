@@ -1,37 +1,41 @@
 {% extends 'base.html' %}
 {% block title %}Histórico de Encomendas - Receba{% endblock %}
 {% block content %}
-<h2>Histórico de Encomendas</h2>
+
+<div class="mt-4">
+  <h3><i class="bi bi-clock-history mr-2"></i>Histórico de Encomendas</h3>
+</div>
+
 <table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>COD</th>
-            <th>Empresa</th>
-            <th>Entregador</th>
-            <th>Morador</th>
-            <th>Porteiro (Registro)</th>
-            <th>Porteiro (Retirada)</th>
-            <th>Status</th>
-            <th>Data Registro</th>
-            <th>Data Retirada</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for e in encomendas %}
-        <tr>
-            <td>{{ e.uuid[:8] }}</td>
-            <td>{{ e.cod }}</td>
-            <td>{{ e.empresa }}</td>
-            <td>{{ e.entregador }}</td>
-            <td>{{ e.morador_nome or '' }}</td>
-            <td>{{ e.porteiro_nome }}</td>
-            <td>{{ e.retirada_porteiro_nome or '' }}</td>
-            <td>{{ e.status }}</td>
-            <td>{{ e.data_registro }}</td>
-            <td>{{ e.data_retirada or '' }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>COD</th>
+      <th>Empresa</th>
+      <th>Entregador</th>
+      <th>Morador</th>
+      <th>Porteiro (Registro)</th>
+      <th>Porteiro (Retirada)</th>
+      <th>Status</th>
+      <th>Data Registro</th>
+      <th>Data Retirada</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for e in encomendas %}
+    <tr>
+      <td>{{ e.uuid[:8] }}</td>
+      <td>{{ e.cod }}</td>
+      <td>{{ e.empresa }}</td>
+      <td>{{ e.entregador }}</td>
+      <td>{{ e.morador_nome or '' }}</td>
+      <td>{{ e.porteiro_nome }}</td>
+      <td>{{ e.retirada_porteiro_nome or '' }}</td>
+      <td>{{ e.status }}</td>
+      <td>{{ e.data_registro }}</td>
+      <td>{{ e.data_retirada or '' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>
 {% endblock %}

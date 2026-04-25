@@ -1,119 +1,65 @@
 <!doctype html>
 <html lang="pt">
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <title>{% block title %}Receba - Sistema de Encomendas{% endblock %}</title>
-    <style>
-        :root {
-            --primary-color: #1B3E6F;
-            --secondary-color: #83B84A;
-            --sidebar-bg: #F0F4FA;
-            --background-color: #F8FAFF;
-            --hover-color: #6B9E3B;
-        }
-        body {
-            background-color: var(--background-color);
-            color: var(--primary-color);
-            padding-top: 4rem;
-        }
-        .navbar-dark {
-            background-color: var(--primary-color) !important;
-        }
-        .navbar-brand img {
-            height: 40px;
-        }
-        .sidebar {
-            position: fixed;
-            top: 60px;
-            left: 0;
-            width: 220px;
-            height: calc(100vh - 60px);
-            background-color: var(--sidebar-bg);
-            padding-top: 1rem;
-            overflow-y: auto;
-        }
-        .sidebar a {
-            display: block;
-            padding: 0.5rem 1rem;
-            color: var(--primary-color);
-        }
-        .sidebar a:hover {
-            background-color: var(--secondary-color);
-            color: white;
-            text-decoration: none;
-        }
-        .content {
-            margin-left: 240px;
-            padding: 1rem;
-        }
-        .btn-primary {
-            background-color: var(--secondary-color);
-            border-color: var(--secondary-color);
-            color: #fff;
-        }
-        .btn-primary:hover {
-            background-color: var(--hover-color);
-            border-color: var(--hover-color);
-            color: #fff;
-        }
-        .btn-success {
-            background-color: var(--secondary-color);
-            border-color: var(--secondary-color);
-        }
-        .btn-success:hover {
-            background-color: var(--hover-color);
-            border-color: var(--hover-color);
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style/style.css') }}" />
+  <title>{% block title %}Receba - Sistema de Encomendas{% endblock %}</title>
 </head>
+
 <body>
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top">
-        <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">
-            <img src="{{ url_for('static', filename='images/logo-icon.png') }}" alt="Receba">
-        </a>
-        <ul class="navbar-nav ml-auto">
-            {% if session.get('porteiro_nome') %}
-            <li class="nav-item">
-                <span class="navbar-text text-white mr-3">Olá, {{ session['porteiro_nome'] }}</span>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('main.logout') }}">Sair</a>
-            </li>
-            {% endif %}
-        </ul>
-    </nav>
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top">
+    <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">
+      <img src="{{ url_for('static', filename='images/logo-icon.png') }}" alt="Receba">
+    </a>
+    <ul class="navbar-nav ml-auto">
+      {% if session.get('porteiro_nome') %}
+      <li class="nav-item">
+        <span class="navbar-text text-white mr-3"> <i class="bi bi-person-circle mr-2"></i>Olá, {{
+          session['porteiro_nome'] }}</span>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('main.logout') }}">
+          <i class="bi bi-box-arrow-right mr-1"></i>Sair</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
 
-    {% if session.get('porteiro_id') %}
-    <div class="sidebar">
-        <h5 class="text-center">Menu</h5>
-        <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('main.registrar_encomenda') }}">Registrar Encomenda</a>
-        <a href="{{ url_for('main.retirar_encomenda') }}">Registrar Retirada</a>
-        <a href="{{ url_for('main.historico') }}">Histórico</a>
-        <a href="{{ url_for('main.cadastrar_morador_route') }}">Cadastrar Morador</a>
-        <a href="{{ url_for('main.cadastrar_porteiro_route') }}">Cadastrar Porteiro</a>
-        <a href="{{ url_for('main.listar_moradores') }}">Lista de Moradores</a>
+  {% if session.get('porteiro_id') %}
+  <div class="sidebar">
+    <a href="{{ url_for('main.dashboard') }}"><i class="bi bi-speedometer2 mr-2"></i>Dashboard</a>
+    <a href="{{ url_for('main.registrar_encomenda') }}"><i class="bi bi-box-seam mr-2"></i>Registrar Encomenda</a>
+    <a href="{{ url_for('main.retirar_encomenda') }}"><i class="bi bi-card-checklist mr-2"></i>Registrar Retirada</a>
+    <a href="{{ url_for('main.historico') }}"><i class="bi bi-clock-history mr-2"></i>Histórico</a>
+    <a href="{{ url_for('main.cadastrar_morador_route') }}"><i class="bi bi-house-add mr-2"></i>Cadastrar Morador</a>
+    <a href="{{ url_for('main.cadastrar_porteiro_route') }}"><i class="bi bi-person-badge mr-2"></i>Cadastrar
+      Porteiro</a>
+    <a href="{{ url_for('main.listar_moradores') }}"> <i class="bi bi-people mr-2"></i>Lista de Moradores</a>
+  </div>
+  {% endif %}
+
+  <main role="main" class="content">
+    <div class="container">
+      {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+      <div class="alert alert-info" role="alert">
+        {% for category, message in messages %}
+        <div>{% if category == 'html' %}{{ message | safe }}{% else %}{{ message }}{% endif %}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
     </div>
-    {% endif %}
+  </main>
 
-    <main role="main" class="content">
-        <div class="container">
-            {% with messages = get_flashed_messages(with_categories=True) %}
-                {% if messages %}
-                    <div class="alert alert-info" role="alert">
-                        {% for category, message in messages %}
-                            <div>{% if category == 'html' %}{{ message | safe }}{% else %}{{ message }}{% endif %}</div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            {% endwith %}
-            {% block content %}{% endblock %}
-        </div>
-    </main>
-
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

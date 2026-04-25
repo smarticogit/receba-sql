@@ -1,28 +1,33 @@
 {% extends 'base.html' %}
 {% block title %}Lista de Moradores - Receba{% endblock %}
 {% block content %}
-<h2>Lista de Moradores</h2>
+
+<div class="mt-4">
+  <h3><i class="bi bi-people mr-2"></i>Lista de Moradores</h3>
+</div>
+
 <p>Selecione um morador para iniciar o registro de uma encomenda.</p>
 <table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Nome</th>
-            <th>Torre</th>
-            <th>Apartamento</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for morador in moradores %}
-        <tr>
-            <td>{{ morador.nome }}</td>
-            <td>{{ morador.torre }}</td>
-            <td>{{ morador.ap }}</td>
-            <td>
-                <a class="btn btn-primary btn-sm" href="{{ url_for('main.registrar_encomenda', morador_id=morador.id) }}">Registrar Encomenda</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
+  <thead>
+    <tr>
+      <th>Nome</th>
+      <th>Torre</th>
+      <th>Apartamento</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for morador in moradores %}
+    <tr>
+      <td>{{ morador.nome }}</td>
+      <td>{{ morador.torre }}</td>
+      <td>{{ morador.ap }}</td>
+      <td>
+        <a class="btn btn-primary btn-sm"
+          href="{{ url_for('main.registrar_encomenda', morador_id=morador.id) }}">Registrar Encomenda</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>
 {% endblock %}
