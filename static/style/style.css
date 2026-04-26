@@ -118,10 +118,16 @@ body {
   letter-spacing: 0.5px;
 }
 
+.table tbody td,
+.table thead th {
+  font-size: 0.85rem;
+}
+
 .table tbody td {
-  padding: 0.9rem 0.75rem;
+  padding: 0.65rem 0.6rem;
   border-bottom: 1px solid var(--border-light);
   color: var(--primary-color);
+  white-space: nowrap;
 }
 
 .table tbody tr:hover {

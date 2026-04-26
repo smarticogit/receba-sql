@@ -7,6 +7,30 @@ from sqlalchemy import text
 from models import db
 
 
+def normalize_nome(nome):
+    if not nome:
+        return nome
+    nome = nome.strip()
+    if not nome:
+        return nome
+    lower_exceptions = {
+        "da",
+        "de",
+        "do",
+        "dos",
+        "das",
+        "e",
+    }
+    parts = []
+    for part in nome.split():
+        normalized = part.lower()
+        if normalized in lower_exceptions:
+            parts.append(normalized)
+        else:
+            parts.append(part.capitalize())
+    return " ".join(parts)
+
+
 def row_to_obj(row):
     if row is None:
         return None
@@ -32,6 +56,9 @@ def create_porteiro(nome, email, senha):
 
 
 def get_morador_by_unique(nome, torre, ap):
+    nome = normalize_nome(nome)
+    if torre:
+        torre = torre.upper()
     result = db.session.execute(
         text(
             "SELECT * FROM moradores WHERE nome = :nome AND torre = :torre AND ap = :ap"
@@ -41,7 +68,30 @@ def get_morador_by_unique(nome, torre, ap):
     return row_to_obj(result)
 
 
+def get_morador_by_whatsapp(whatsapp):
+    if not whatsapp:
+        return None
+    whatsapp_clean = "".join(filter(str.isdigit, whatsapp))
+    if not whatsapp_clean:
+        return None
+    result = db.session.execute(
+        text(
+            "SELECT * FROM moradores WHERE REPLACE(REPLACE(REPLACE(REPLACE(whatsapp, '(', ''), ')', ''), '-', ''), ' ', '') = :whatsapp"
+        ),
+        {"whatsapp": whatsapp_clean},
+    ).fetchone()
+    return row_to_obj(result)
+
+
 def create_morador(nome, torre, ap, whatsapp):
+    nome = normalize_nome(nome)
+    if torre:
+        torre = torre.upper()
+    if whatsapp:
+        whatsapp = "".join(filter(str.isdigit, whatsapp))
+    existing = get_morador_by_unique(nome, torre, ap)
+    if existing:
+        return existing
     db.session.execute(
         text(
             "INSERT INTO moradores (nome, torre, ap, whatsapp) VALUES (:nome, :torre, :ap, :whatsapp)"
@@ -49,6 +99,7 @@ def create_morador(nome, torre, ap, whatsapp):
         {"nome": nome, "torre": torre, "ap": ap, "whatsapp": whatsapp},
     )
     db.session.commit()
+    return get_morador_by_unique(nome, torre, ap)
 
 
 def search_moradores(nome=None, torre=None, ap=None):
@@ -82,6 +133,12 @@ def get_morador_by_id(morador_id):
 
 
 def create_encomenda(cod, empresa, entregador, porteiro_id, morador_id):
+    if not porteiro_id:
+        raise ValueError(
+            "Porteiro inválido. Não é possível registrar encomenda sem porteiro."
+        )
+    if cod and cod_pendente_existe(cod):
+        raise ValueError("Já existe uma encomenda pendente com esse código.")
     package_uuid = str(uuid.uuid4())
     now = datetime.utcnow()
     db.session.execute(
@@ -104,9 +161,21 @@ def create_encomenda(cod, empresa, entregador, porteiro_id, morador_id):
     return package_uuid
 
 
+def cod_pendente_existe(cod):
+    if not cod:
+        return False
+    result = db.session.execute(
+        text(
+            "SELECT 1 FROM encomendas WHERE cod = :cod AND status = 'pendente' LIMIT 1"
+        ),
+        {"cod": cod},
+    ).fetchone()
+    return result is not None
+
+
 def search_encomenda_by_uuid_prefix(prefix):
     query = (
-        "SELECT e.*, p.nome AS porteiro_nome, m.nome AS morador_nome, rp.nome AS retirada_porteiro_nome "
+        "SELECT e.*, p.nome AS porteiro_nome, m.nome AS morador_nome, m.torre AS torre, m.ap AS ap, rp.nome AS retirada_porteiro_nome "
         "FROM encomendas e "
         "LEFT JOIN porteiros p ON p.id = e.porteiro_id "
         "LEFT JOIN moradores m ON m.id = e.morador_id "
@@ -199,7 +268,7 @@ def get_historico():
 
 def get_pendentes():
     query = (
-        "SELECT e.*, p.nome AS porteiro_nome, m.nome AS morador_nome "
+        "SELECT e.*, p.nome AS porteiro_nome, m.nome AS morador_nome, m.torre AS torre, m.ap AS ap "
         "FROM encomendas e "
         "LEFT JOIN porteiros p ON p.id = e.porteiro_id "
         "LEFT JOIN moradores m ON m.id = e.morador_id "

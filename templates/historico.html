@@ -14,8 +14,8 @@
       <th>Empresa</th>
       <th>Entregador</th>
       <th>Morador</th>
-      <th>Porteiro (Registro)</th>
-      <th>Porteiro (Retirada)</th>
+      <th>Registro</th>
+      <th>Retirada</th>
       <th>Status</th>
       <th>Data Registro</th>
       <th>Data Retirada</th>
@@ -31,7 +31,15 @@
       <td>{{ e.morador_nome or '' }}</td>
       <td>{{ e.porteiro_nome }}</td>
       <td>{{ e.retirada_porteiro_nome or '' }}</td>
-      <td>{{ e.status }}</td>
+      <td>
+        {% if e.status == 'pendente' %}
+        <span class="badge badge-warning">Pendente</span>
+        {% elif e.status == 'retirada' %}
+        <span class="badge badge-success">Retirada</span>
+        {% else %}
+        {{ e.status }}
+        {% endif %}
+      </td>
       <td>{{ e.data_registro | format_date_br }}</td>
       <td>{{ e.data_retirada | format_date_br }}</td>
     </tr>

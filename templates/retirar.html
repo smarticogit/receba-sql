@@ -8,44 +8,44 @@ Registrar Retirada - Receba
   <h3><i class="bi bi-card-checklist mr-2"></i>Registrar Retirada</h3>
 </div>
 
-<form method="POST" action="{{ url_for('main.retirar_encomenda') }}" class="form-inline mb-3">
-  <div class="form-group mr-2">
-    <label for="uuid" class="mr-2">ID da Encomenda</label>
-    <input type="text" class="form-control" id="uuid" name="uuid" placeholder="Primeiros 8 caracteres" required />
-  </div>
-  <button type="submit" class="btn btn-primary">Buscar</button>
-</form>
-
-{% if searched %} {% if encomenda %}
+{% if encomenda %}
 <h4>Detalhes da Encomenda</h4>
-<p><strong>ID:</strong> {{ encomenda.uuid[:8] }}</p>
-<p><strong>COD:</strong> {{ encomenda.cod }}</p>
-<p><strong>Empresa:</strong> {{ encomenda.empresa }}</p>
-<p><strong>Entregador:</strong> {{ encomenda.entregador }}</p>
-<p><strong>Status:</strong> {{ encomenda.status }}</p>
-<p><strong>Registrado por:</strong> {{ encomenda.porteiro_nome }}</p>
-{% if encomenda.status == 'retirada' and encomenda.retirada_porteiro_nome %}
-<p><strong>Retirada por:</strong> {{ encomenda.retirada_porteiro_nome }}</p>
-{% endif %} {% if encomenda.status == 'pendente' %}
-<div class="mb-3">
-  <p>
-    Para retirada manual, informe o nome do morador e clique em "Registrar
-    Retirada":
-  </p>
-  <form method="POST" action="{{ url_for('main.finalizar_retirada_route', encomenda_id=encomenda.id) }}">
-    <div class="form-group">
-      <label for="morador_nome">Nome do Morador</label>
-      <input type="text" class="form-control" id="morador_nome" name="morador_nome" required />
-    </div>
-    <button type="submit" class="btn btn-success">Registrar Retirada</button>
-  </form>
+<div class="card card-body mb-4">
+  <p><strong>COD:</strong> {{ encomenda.cod }}</p>
+  <p><strong>Empresa:</strong> {{ encomenda.empresa }}</p>
+  <p><strong>Morador:</strong> {{ encomenda.morador_nome or '' }}</p>
+  <p><strong>Torre:</strong> {{ encomenda.torre or '' }}</p>
+  <p><strong>AP:</strong> {{ encomenda.ap or '' }}</p>
+  <p><strong>Status:</strong> {{ encomenda.status }}</p>
+  <p><strong>Registrado por:</strong> {{ encomenda.porteiro_nome }}</p>
 </div>
-<div>
-  <p>Ou gere um QR Code para confirmação:</p>
-  <img src="{{ url_for('static', filename='qrcodes/' + encomenda.uuid + '.png') }}" alt="QR Code de retirada"
-    width="200" />
-  <p>O morador pode escanear o QR Code para confirmar a retirada.</p>
-</div>
+{% if encomenda.status == 'pendente' %}
+<form method="POST" action="{{ url_for('main.finalizar_retirada_route', encomenda_id=encomenda.id) }}">
+  {% if moradores_endereco and moradores_endereco|length > 1 %}
+  <div class="form-group">
+    <label for="morador_nome">Nome do Morador</label>
+    <select class="form-control" id="morador_nome" name="morador_nome" required>
+      <option value="">Selecione...</option>
+      {% for m in moradores_endereco %}
+      <option value="{{ m.nome }}">{{ m.nome }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% else %}
+  <div class="form-group">
+    <label>Nome do Morador</label>
+    <div class="form-control-plaintext">{{ encomenda.morador_nome or 'Sem morador vinculado' }}</div>
+  </div>
+  <input type="hidden" name="morador_nome" value="{{ encomenda.morador_nome }}" />
+  {% endif %}
+  <button type="submit" class="btn btn-success">Registrar Retirada</button>
+</form>
 {% else %}
 <p>Esta encomenda já foi retirada em {{ encomenda.data_retirada | format_date_br }}.</p>
-{% endif %} {% endif %} {% endif %} {% endblock %}
+{% endif %}
+{% else %}
+<div class="alert alert-secondary">
+  Selecione uma encomenda no Dashboard para registrar a retirada.
+</div>
+{% endif %}
+{% endblock %}

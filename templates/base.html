@@ -37,12 +37,10 @@
     </div>
     <a href="{{ url_for('main.dashboard') }}"><i class="bi bi-speedometer2 mr-2"></i>Dashboard</a>
     <a href="{{ url_for('main.registrar_encomenda') }}"><i class="bi bi-box-seam mr-2"></i>Registrar Encomenda</a>
-    <a href="{{ url_for('main.retirar_encomenda') }}"><i class="bi bi-card-checklist mr-2"></i>Registrar Retirada</a>
-    <a href="{{ url_for('main.historico') }}"><i class="bi bi-clock-history mr-2"></i>Histórico</a>
     <a href="{{ url_for('main.cadastrar_morador_route') }}"><i class="bi bi-house-add mr-2"></i>Cadastrar Morador</a>
     <a href="{{ url_for('main.cadastrar_porteiro_route') }}"><i class="bi bi-person-badge mr-2"></i>Cadastrar
       Porteiro</a>
-    <a href="{{ url_for('main.listar_moradores') }}"><i class="bi bi-people mr-2"></i>Lista de Moradores</a>
+    <a href="{{ url_for('main.historico') }}"><i class="bi bi-clock-history mr-2"></i>Histórico</a>
   </div>
   {% endif %}
 
@@ -50,11 +48,13 @@
     <div class="container">
       {% with messages = get_flashed_messages(with_categories=True) %}
       {% if messages %}
-      <div class="alert alert-info" role="alert">
-        {% for category, message in messages %}
-        <div>{% if category == 'html' %}{{ message | safe }}{% else %}{{ message }}{% endif %}</div>
-        {% endfor %}
+      {% for category, message in messages %}
+      {% set alert_type = category if category in ['success', 'danger', 'warning', 'info', 'primary', 'secondary',
+      'light', 'dark'] else 'info' %}
+      <div class="alert alert-{{ alert_type }}" role="alert">
+        {% if category == 'html' %}{{ message | safe }}{% else %}{{ message }}{% endif %}
       </div>
+      {% endfor %}
       {% endif %}
       {% endwith %}
       {% block content %}{% endblock %}

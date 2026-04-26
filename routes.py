@@ -1,7 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 import os
-import qrcode
-import urllib.parse
 
 from controllers import (
     get_porteiro_by_email,
@@ -9,14 +7,15 @@ from controllers import (
     get_morador_by_unique,
     create_morador,
     search_moradores,
-    list_moradores,
     create_encomenda,
+    cod_pendente_existe,
     search_encomenda_by_uuid_prefix,
     finalize_retirada,
     confirm_retirada,
     get_historico,
     get_pendentes,
     get_morador_by_id,
+    get_morador_by_whatsapp,
 )
 
 bp = Blueprint("main", __name__)
@@ -79,41 +78,55 @@ def registrar_encomenda():
             empresa = empresa_outro
         entregador = request.form.get("entregador")
         morador_id = request.form.get("morador_id")
+
+        if not morador_id:
+            nome = request.form.get("nome")
+            torre = request.form.get("torre")
+            if torre:
+                torre = torre.upper()
+            ap = request.form.get("ap")
+            if nome and torre and ap:
+                morador = get_morador_by_unique(nome, torre, ap)
+                if not morador:
+                    create_morador(nome, torre, ap, None)
+                    morador = get_morador_by_unique(nome, torre, ap)
+                if morador:
+                    morador_id = morador.id
+            elif nome:
+                moradores = search_moradores(nome=nome)
+                if len(moradores) == 1:
+                    morador_id = moradores[0].id
+
+        if cod and cod_pendente_existe(cod):
+            flash("Já existe uma encomenda pendente com esse código.", "danger")
+            if morador_id:
+                return redirect(
+                    url_for("main.registrar_encomenda", morador_id=morador_id)
+                )
+            return redirect(
+                url_for(
+                    "main.registrar_encomenda",
+                    nome=request.form.get("nome", ""),
+                    torre=request.form.get("torre", ""),
+                    ap=request.form.get("ap", ""),
+                )
+            )
+
         morador = get_morador_by_id(morador_id) if morador_id else None
-        package_uuid = create_encomenda(
+        porteiro_id = session.get("porteiro_id")
+        if not porteiro_id:
+            flash(
+                "É necessário estar logado como porteiro para registrar uma encomenda."
+            )
+            return redirect(url_for("main.login"))
+        create_encomenda(
             cod,
             empresa,
             entregador,
-            session.get("porteiro_id"),
+            porteiro_id,
             morador.id if morador else None,
         )
-        qr_dir = os.path.join(bp.root_path, "static", "qrcodes")
-        os.makedirs(qr_dir, exist_ok=True)
-        qr_url = url_for("main.confirmar_retirada", uuid=package_uuid, _external=True)
-        qr_img = qrcode.make(qr_url)
-        qr_path = os.path.join(qr_dir, f"{package_uuid}.png")
-        qr_img.save(qr_path)
-        shortened_id = package_uuid[:8]
-        wa_link = None
-        if morador and morador.whatsapp:
-            phone = "".join(filter(str.isdigit, morador.whatsapp))
-            message = (
-                f"Sua encomenda foi registrada com o ID {shortened_id}. "
-                f"Apresente este código ao porteiro para retirada."
-            )
-            wa_link = f"https://wa.me/{phone}?text={urllib.parse.quote(message)}"
-        if wa_link:
-            flash(
-                (
-                    f"Encomenda registrada com ID {shortened_id}. "
-                    f'<a href="{wa_link}" target="_blank">Enviar via WhatsApp</a>'
-                ),
-                "html",
-            )
-        else:
-            flash(
-                f"Encomenda registrada com ID {shortened_id}. Envie este ID ao morador."
-            )
+        flash("Encomenda registrada com sucesso!")
         return redirect(url_for("main.dashboard"))
 
     morador_id_param = request.args.get("morador_id")
@@ -123,25 +136,43 @@ def registrar_encomenda():
         torre = torre.upper()
     ap = request.args.get("ap")
     moradores = None
+    morador_found = None
     mensagem = None
+
     if morador_id_param:
         morador_obj = get_morador_by_id(morador_id_param)
         if morador_obj:
+            morador_found = morador_obj
             moradores = [morador_obj]
+            nome = morador_obj.nome
+            torre = morador_obj.torre
+            ap = morador_obj.ap
         else:
             mensagem = "Morador não encontrado."
     elif nome:
         moradores = search_moradores(nome=nome)
         if not moradores:
             mensagem = "Nenhum morador encontrado com esse nome."
+        elif len(moradores) == 1:
+            morador_found = moradores[0]
+            nome = morador_found.nome
+            torre = morador_found.torre
+            ap = morador_found.ap
     elif torre and ap:
         moradores = search_moradores(torre=torre, ap=ap)
         if not moradores:
             mensagem = "Nenhum morador encontrado para esse bloco e apartamento."
+        elif len(moradores) == 1:
+            morador_found = moradores[0]
+            nome = morador_found.nome
+            torre = morador_found.torre
+            ap = morador_found.ap
+
     empresas = ["Correios", "Mercado Livre", "Amazon", "Shopee", "Outro"]
     return render_template(
         "registrar.html",
         moradores=moradores,
+        morador_found=morador_found,
         empresas=empresas,
         nome=nome,
         torre=torre,
@@ -154,14 +185,34 @@ def registrar_encomenda():
 @login_required
 def retirar_encomenda():
     encomenda = None
+    moradores_endereco = None
     searched = False
+    search_uuid = None
+
     if request.method == "POST":
         searched = True
         search_uuid = request.form.get("uuid")
+    else:
+        search_uuid = request.args.get("uuid")
+        if search_uuid:
+            searched = True
+
+    if search_uuid:
         encomenda = search_encomenda_by_uuid_prefix(search_uuid)
-        if not encomenda:
+        if encomenda:
+            if getattr(encomenda, "torre", None) and getattr(encomenda, "ap", None):
+                moradores_endereco = search_moradores(
+                    torre=encomenda.torre, ap=encomenda.ap
+                )
+        else:
             flash("Encomenda não encontrada.")
-    return render_template("retirar.html", encomenda=encomenda, searched=searched)
+
+    return render_template(
+        "retirar.html",
+        encomenda=encomenda,
+        searched=searched,
+        moradores_endereco=moradores_endereco,
+    )
 
 
 @bp.route("/confirmar/<uuid:uuid>")
@@ -187,7 +238,7 @@ def finalizar_retirada_route(encomenda_id):
     elif result is None:
         flash("Encomenda não encontrada.")
     else:
-        flash("Retirada registrada com sucesso.")
+        flash("Encomenda retirada com sucesso.")
     return redirect(url_for("main.dashboard"))
 
 
@@ -196,13 +247,6 @@ def finalizar_retirada_route(encomenda_id):
 def historico():
     encomendas = get_historico()
     return render_template("historico.html", encomendas=encomendas)
-
-
-@bp.route("/moradores")
-@login_required
-def listar_moradores():
-    moradores = list_moradores()
-    return render_template("lista_moradores.html", moradores=moradores)
 
 
 @bp.route("/cadastrar_morador", methods=["GET", "POST"])
@@ -218,6 +262,8 @@ def cadastrar_morador_route():
         existing = get_morador_by_unique(nome, torre, ap)
         if existing:
             flash("Já existe um morador com esse nome e apartamento.")
+        elif whatsapp and get_morador_by_whatsapp(whatsapp):
+            flash("Já existe um morador com esse número de telefone.", "danger")
         else:
             create_morador(nome, torre, ap, whatsapp)
             flash("Morador cadastrado com sucesso.")

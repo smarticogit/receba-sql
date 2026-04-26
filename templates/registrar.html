@@ -10,18 +10,31 @@
   <div class="form-row">
     <div class="col-md-3 mb-2">
       <label for="nome">Nome do Morador</label>
-      <input type="text" class="form-control" id="nome" name="nome" value="{{ nome or '' }}">
+      {% if moradores and not morador_found %}
+      <select class="form-control" id="morador_id" name="morador_id" required
+        onchange="if(this.value) this.form.submit();">
+        <option value="">Selecione...</option>
+        {% for m in moradores %}
+        <option value="{{ m.id }}">{{ m.nome }} - Torre {{ m.torre }} Ap {{ m.ap }}</option>
+        {% endfor %}
+      </select>
+      {% else %}
+      <input type="text" class="form-control" id="nome" name="nome" value="{{ nome or '' }}" {% if morador_found
+        %}disabled{% endif %}>
+      {% endif %}
     </div>
     <div class="col-md-3 mb-2">
       <label for="torre">Bloco/Torre</label>
-      <input type="text" class="form-control" id="torre" name="torre" value="{{ torre or '' }}">
+      <input type="text" class="form-control" id="torre" name="torre" value="{{ torre or '' }}" {% if morador_found
+        %}disabled{% endif %}>
     </div>
     <div class="col-md-3 mb-2">
       <label for="ap">Apartamento</label>
-      <input type="text" class="form-control" id="ap" name="ap" value="{{ ap or '' }}">
+      <input type="text" class="form-control" id="ap" name="ap" value="{{ ap or '' }}" {% if morador_found %}disabled{%
+        endif %}>
     </div>
     <div class="col-md-3 mb-2 align-self-end">
-      <button type="submit" class="btn btn-secondary">Buscar Morador</button>
+      <button type="submit" class="btn btn-secondary" {% if morador_found %}disabled{% endif %}>Buscar Morador</button>
     </div>
   </div>
 </form>
@@ -30,7 +43,7 @@
 <div class="alert alert-warning">{{ mensagem }}</div>
 {% endif %}
 
-{% if moradores %}
+{% if morador_found %}
 <form method="POST" action="{{ url_for('main.registrar_encomenda') }}" onsubmit="return validarEmpresa();">
   <div class="form-group">
     <label for="cod">Código do Armário/Pacote</label>
@@ -50,23 +63,9 @@
     <label for="entregador">Nome do Entregador</label>
     <input type="text" class="form-control" id="entregador" name="entregador">
   </div>
-  <div class="form-group">
-    {% if moradores|length == 1 %}
-    <label>Morador</label>
-    <div class="form-control-plaintext">
-      {{ moradores[0].nome }} - Torre {{ moradores[0].torre }} Ap {{ moradores[0].ap }}
-    </div>
-    <input type="hidden" name="morador_id" value="{{ moradores[0].id }}">
-    {% else %}
-    <label for="morador_id">Morador</label>
-    <select class="form-control" id="morador_id" name="morador_id" required>
-      <option value="">Selecione...</option>
-      {% for m in moradores %}
-      <option value="{{ m.id }}">{{ m.nome }} - Torre {{ m.torre }} Ap {{ m.ap }}</option>
-      {% endfor %}
-    </select>
-    {% endif %}
-  </div>
+  {% if morador_found %}
+  <input type="hidden" name="morador_id" value="{{ morador_found.id }}">
+  {% endif %}
   <button type="submit" class="btn btn-success">Registrar</button>
 </form>
 {% endif %}

@@ -13,8 +13,12 @@
       <tr>
         <th class="text-center">Código</th>
         <th class="text-center">Empresa</th>
-        <th class="text-center">Entregador</th>
-        <th class="text-center">Data de Registro</th>
+        <th class="text-center">Morador</th>
+        <th class="text-center">Torre</th>
+        <th class="text-center">AP</th>
+        <th class="text-center">Data</th>
+        <th class="text-center">Status</th>
+        <th class="text-center">Ação</th>
       </tr>
     </thead>
     <tbody>
@@ -22,8 +26,16 @@
       <tr>
         <td class="text-center">{{ e.cod }}</td>
         <td class="text-center">{{ e.empresa }}</td>
-        <td class="text-center">{{ e.entregador }}</td>
+        <td class="text-center">{{ e.morador_nome or '' }}</td>
+        <td class="text-center">{{ e.torre or '' }}</td>
+        <td class="text-center">{{ e.ap or '' }}</td>
         <td class="text-center">{{ e.data_registro | format_date_br }}</td>
+        <td class="text-center"><span class="badge badge-warning">Pendente</span></td>
+        <td class="text-center">
+          <a href="{{ url_for('main.retirar_encomenda', uuid=e.uuid) }}" class="btn btn-sm btn-success">
+            <i class="bi bi-check-circle"></i> Retirar
+          </a>
+        </td>
       </tr>
       {% endfor %}
     </tbody>
