@@ -32,8 +32,8 @@
       <td>{{ e.porteiro_nome }}</td>
       <td>{{ e.retirada_porteiro_nome or '' }}</td>
       <td>{{ e.status }}</td>
-      <td>{{ e.data_registro }}</td>
-      <td>{{ e.data_retirada or '' }}</td>
+      <td>{{ e.data_registro | format_date_br }}</td>
+      <td>{{ e.data_retirada | format_date_br }}</td>
     </tr>
     {% endfor %}
   </tbody>

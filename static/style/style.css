@@ -1,71 +1,155 @@
 :root {
-      --primary-color: #1B3E6F;
-      --secondary-color: #83B84A;
-      --sidebar-bg: #F0F4FA;
-      --background-color: #F8FAFF;
-      --hover-color: #6B9E3B;
-    }
+  --primary-color: #1b3e6f;
+  --secondary-color: #83b84a;
+  --sidebar-bg: #f0f4fa;
+  --background-color: #f8faff;
+  --hover-color: #6b9e3b;
+  --table-header: #ebf2f7;
+  --table-row-hover: #f5f9fc;
+  --border-light: #e0e8f0;
+}
 
-    body {
-      background-color: var(--background-color);
-      color: var(--primary-color);
-      padding-top: 4rem;
-    }
+body {
+  background-color: var(--background-color);
+  color: var(--primary-color);
+  padding-top: 4rem;
+}
 
-    .navbar-dark {
-      background-color: var(--primary-color) !important;
-    }
+.navbar-dark {
+  background-color: var(--primary-color) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
 
-    .navbar-brand img {
-      height: 40px;
-    }
+.navbar-brand {
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
 
-    .sidebar {
-      position: fixed;
-      top: 60px;
-      left: 0;
-      width: 220px;
-      height: calc(100vh - 60px);
-      background-color: var(--sidebar-bg);
-      padding-top: 1rem;
-      overflow-y: auto;
-    }
+.nav-link {
+  color: rgba(255, 255, 255, 0.85) !important;
+  transition: color 0.3s ease;
+  margin-right: 0.5rem;
+}
 
-    .sidebar a {
-      display: block;
-      padding: 0.5rem 1rem;
-      color: var(--primary-color);
-    }
+.nav-link:hover {
+  color: white !important;
+}
 
-    .sidebar a:hover {
-      background-color: var(--secondary-color);
-      color: white;
-      text-decoration: none;
-    }
+.navbar-text {
+  font-size: 0.95rem;
+}
 
-    .content {
-      margin-left: 240px;
-      padding: 1rem;
-    }
+.sidebar {
+  position: fixed;
+  top: 80px;
+  left: 16px;
+  width: 240px;
+  height: auto;
+  max-height: calc(100vh - 100px);
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  padding: 0;
+  overflow-y: auto;
+  border: 1px solid var(--border-light);
+  z-index: 1000;
+}
 
-    .btn-primary {
-      background-color: var(--secondary-color);
-      border-color: var(--secondary-color);
-      color: #fff;
-    }
+.sidebar-header {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-light);
+  background-color: var(--table-header);
+  border-radius: 12px 12px 0 0;
+}
 
-    .btn-primary:hover {
-      background-color: var(--hover-color);
-      border-color: var(--hover-color);
-      color: #fff;
-    }
+.sidebar-header h5 {
+  margin: 0;
+  color: var(--primary-color);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
 
-    .btn-success {
-      background-color: var(--secondary-color);
-      border-color: var(--secondary-color);
-    }
+.sidebar a {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: var(--primary-color);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
 
-    .btn-success:hover {
-      background-color: var(--hover-color);
-      border-color: var(--hover-color);
-    }
+.sidebar a:hover {
+  background-color: rgba(131, 184, 74, 0.1);
+  color: var(--hover-color);
+  padding-left: 1.25rem;
+  text-decoration: none;
+}
+
+.sidebar a:last-child {
+  border-bottom: none;
+}
+
+.content {
+  margin-left: 280px;
+  padding: 1.5rem;
+}
+
+/* Table Styles */
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-light);
+}
+
+.table thead th {
+  background-color: var(--table-header);
+  color: var(--primary-color);
+  font-weight: 600;
+  border-bottom: 2px solid var(--border-light);
+  padding: 1rem 0.75rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table tbody td {
+  padding: 0.9rem 0.75rem;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--primary-color);
+}
+
+.table tbody tr:hover {
+  background-color: var(--table-row-hover);
+}
+
+.table-striped tbody tr:nth-of-type(even) {
+  background-color: rgba(131, 184, 74, 0.03);
+}
+
+.btn-primary {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: var(--hover-color);
+  border-color: var(--hover-color);
+  color: #fff;
+}
+
+.btn-success {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+}
+
+.btn-success:hover {
+  background-color: var(--hover-color);
+  border-color: var(--hover-color);
+}

@@ -119,6 +119,8 @@ def registrar_encomenda():
     morador_id_param = request.args.get("morador_id")
     nome = request.args.get("nome")
     torre = request.args.get("torre")
+    if torre:
+        torre = torre.upper()
     ap = request.args.get("ap")
     moradores = None
     mensagem = None
@@ -209,6 +211,8 @@ def cadastrar_morador_route():
     if request.method == "POST":
         nome = request.form.get("nome")
         torre = request.form.get("torre")
+        if torre:
+            torre = torre.upper()
         ap = request.form.get("ap")
         whatsapp = request.form.get("whatsapp")
         existing = get_morador_by_unique(nome, torre, ap)

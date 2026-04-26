@@ -47,5 +47,5 @@ Registrar Retirada - Receba
   <p>O morador pode escanear o QR Code para confirmar a retirada.</p>
 </div>
 {% else %}
-<p>Esta encomenda já foi retirada em {{ encomenda.data_retirada }}.</p>
+<p>Esta encomenda já foi retirada em {{ encomenda.data_retirada | format_date_br }}.</p>
 {% endif %} {% endif %} {% endif %} {% endblock %}
