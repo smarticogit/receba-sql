@@ -21,12 +21,10 @@ with app.app_context():
 app.register_blueprint(main_bp)
 
 
-# Filtro para formatar datas em português
 def format_date_br(date_obj):
     if date_obj is None or date_obj == "":
         return ""
 
-    # Converter string para datetime se necessário
     if isinstance(date_obj, str):
         try:
             date_obj = datetime.strptime(date_obj, "%Y-%m-%d %H:%M:%S.%f")
@@ -36,7 +34,6 @@ def format_date_br(date_obj):
             except ValueError:
                 return str(date_obj)
 
-    # Interpretar a data armazenada como UTC e converter para hora local
     if date_obj.tzinfo is None:
         date_obj = date_obj.replace(tzinfo=timezone.utc).astimezone()
     else:

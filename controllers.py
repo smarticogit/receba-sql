@@ -50,7 +50,7 @@ def create_porteiro(nome, email, senha):
         text(
             "INSERT INTO porteiros (nome, email, password_hash) VALUES (:nome, :email, :pwd)"
         ),
-        {"nome": nome, "email": email, "pwd": hashed},
+        {"nome": normalize_nome(nome), "email": email, "pwd": hashed},
     )
     db.session.commit()
 
