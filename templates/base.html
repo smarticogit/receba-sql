@@ -12,6 +12,16 @@
 
 <body class="{% if session.get('porteiro_id') %}has-sidebar{% endif %}">
 
+  <div id="mobile-warning">
+    <div class="mobile-warning-box">
+      <i class="bi bi-display mobile-warning-icon"></i>
+      <h2>Acesso Desktop</h2>
+      <p>O <strong>Receba</strong> foi desenvolvido para uso em computadores.</p>
+      <p>Para a melhor experiência, acesse pelo navegador do seu computador.</p>
+      <small>:: Grupo Univesp PI8-26 ::</small>
+    </div>
+  </div>
+
   {% if session.get('porteiro_id') %}
   <nav class="navbar navbar-expand-md navbar-dark fixed-top">
     <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">
@@ -32,11 +42,14 @@
   </nav>
 
   <div class="sidebar">
-    <div class="sidebar-header"><h5>Menu</h5></div>
+    <div class="sidebar-header">
+      <h5>Menu</h5>
+    </div>
     <a href="{{ url_for('main.dashboard') }}"><i class="bi bi-speedometer2 mr-2"></i>Dashboard</a>
     <a href="{{ url_for('main.registrar_encomenda') }}"><i class="bi bi-box-seam mr-2"></i>Registrar Encomenda</a>
     <a href="{{ url_for('main.cadastrar_morador_route') }}"><i class="bi bi-house-add mr-2"></i>Cadastrar Morador</a>
-    <a href="{{ url_for('main.cadastrar_porteiro_route') }}"><i class="bi bi-person-badge mr-2"></i>Cadastrar Porteiro</a>
+    <a href="{{ url_for('main.cadastrar_porteiro_route') }}"><i class="bi bi-person-badge mr-2"></i>Cadastrar
+      Porteiro</a>
     <a href="{{ url_for('main.historico') }}"><i class="bi bi-clock-history mr-2"></i>Histórico</a>
   </div>
   {% endif %}
@@ -45,12 +58,13 @@
     <div class="container">
       {% with messages = get_flashed_messages(with_categories=True) %}
       {% if messages %}
-        {% for category, message in messages %}
-          {% set alert_type = category if category in ['success', 'danger', 'warning', 'info', 'primary', 'secondary', 'light', 'dark'] else 'info' %}
-          <div class="alert alert-{{ alert_type }}" role="alert">
-            {% if category == 'html' %}{{ message | safe }}{% else %}{{ message }}{% endif %}
-          </div>
-        {% endfor %}
+      {% for category, message in messages %}
+      {% set alert_type = category if category in ['success', 'danger', 'warning', 'info', 'primary', 'secondary',
+      'light', 'dark'] else 'info' %}
+      <div class="alert alert-{{ alert_type }}" role="alert">
+        {% if category == 'html' %}{{ message | safe }}{% else %}{{ message }}{% endif %}
+      </div>
+      {% endfor %}
       {% endif %}
       {% endwith %}
       {% block content %}{% endblock %}
