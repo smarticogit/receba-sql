@@ -1,73 +1,165 @@
-# Receba – Sistema de Gerenciamento de Encomendas
+# Receba - Sistema de Gerenciamento de Encomendas
 
-Este projeto é um sistema simples de gerenciamento de encomendas desenvolvido em Python usando o micro‑framework **Flask** e um banco de dados SQLite local. O objetivo do sistema é auxiliar porteiros de condomínios a registrar e controlar encomendas destinadas aos moradores.
+O **Receba** é um sistema web para controle de encomendas em condomínios. Ele foi desenvolvido em **Python**, com **Flask** e **SQLite**, para ajudar a portaria a registrar entregas, acompanhar encomendas pendentes e controlar a retirada pelos moradores.
+
+A aplicação trabalha com login de porteiros, cadastro de moradores, registro de encomendas, histórico de movimentações e identificação de qual porteiro recebeu ou finalizou cada retirada.
+
+## Imagens do Sistema
+
+<img src="docs/images/login.png" alt="Tela de login do Receba" width="650">
+<img src="docs/images/dashboard.png" alt="Tela de registro de encomenda" width="650">
+<img src="docs/images/registrar-encomenda.png" alt="Tela de registro de retirada" width="650">
+<img src="docs/images/registrar-retirada.png" alt="Tela de registro de retirada" width="650">
+<img src="docs/images/historico.png" alt="Tela de registro de retirada" width="650">
 
 ## Funcionalidades
 
-* **Login de Porteiro** – apenas porteiros cadastrados conseguem acessar o sistema. Um usuário padrão (`admin`/`admin`) é criado automaticamente na primeira execução.
-* **Dashboard** – após o login, o porteiro visualiza uma lista de encomendas pendentes de retirada, com dados resumidos como ID, código do armário/pacote, empresa e data do registro.
-* **Registrar Encomenda** – tela para cadastrar novas encomendas informando código do armário/pacote, empresa de entrega, nome do entregador, morador e seu WhatsApp (opcional). Cada encomenda recebe um identificador único (UUID) e tem um QR Code gerado automaticamente apontando para a página de confirmação de retirada.
-  * A empresa de entrega pode ser escolhida em uma lista com transportadoras mais comuns (Correios, Mercado Livre, Amazon, Shopee) ou, ao selecionar **Outro**, digitar manualmente.
-  * Para selecionar o morador associado à encomenda você pode pesquisá‑lo por **nome** ou por **bloco/torre** e **apartamento**. Se a busca retornar apenas um morador ele é pré‑selecionado; se houver mais de um, o sistema exibe uma lista para escolha. Também há um link de **Lista de Moradores** no menu que mostra todos os moradores cadastrados — basta clicar no morador desejado para abrir a tela de registro de encomenda com seus dados já preenchidos.
-  * Se o morador tiver um número de WhatsApp cadastrado, o sistema disponibiliza um link para enviar uma mensagem via `wa.me` contendo o ID da encomenda ao morador.
-* **Registrar Retirada** – permite procurar uma encomenda pelo ID (os primeiros 8 caracteres do UUID) para registrar a retirada. O porteiro pode:
-  * Informar manualmente o nome do morador e concluir a retirada;
-  * Ou utilizar o QR Code previamente gerado: basta o morador escanear o código e o status é atualizado automaticamente.
-* **Histórico** – lista completa de todas as encomendas, com dados de registro e retirada. Agora o histórico exibe tanto o porteiro que **recebeu** a encomenda quanto o porteiro que **registrou a retirada**, além do nome do morador e as datas correspondentes.
-* **Cadastro de Moradores** – tela dedicada para registrar moradores informando nome, torre/bloco, apartamento e telefone (WhatsApp). Essas informações são utilizadas posteriormente na associação de encomendas e na geração de links para mensagem.
-* **Cadastro de Porteiros** – permite criar novos usuários porteiros (nome, usuário e senha). Útil para que mais de um porteiro possa utilizar o sistema.
+- **Acesso de porteiros:**
+  - login com e-mail e senha
+  - sessão protegida,
+  - usuário inicial `admin@receba.com` / `admin`
+  - cadastro de novos porteiros com senha criptografada.
 
-* **Lista de Moradores** – página que exibe todos os moradores cadastrados no sistema. Além de consultar rapidamente torre/apartamento e telefone, essa lista possui um botão de atalho para a tela de registro de encomendas já com o morador selecionado.
+- **Cadastro de moradores:**
+  - validação de duplicidade por nome + torre + apartamento
+  - bloqueio de WhatsApp já cadastrado.
+
+- **Padronização de dados:**
+  - nomes de moradores e porteiros são salvos e exibidos em formato padronizado, mesmo quando digitados em letras minúsculas ou maiúsculas; 
+  - torre/bloco é salvo em maiúsculas
+  - WhatsApp tem validação de quantidade de números e máscara.
+
+- **Registro de encomendas:**
+  - cadastro de código do armário/pacote
+  - status inicial `pendente`,
+  - UUID como identificador interno
+  - identificação automática do porteiro que recebeu.
+
+- **Busca e seleção de moradores:**
+  - a busca pode ser feita por nome ou por torre/bloco e apartamento;
+  - quando há mais de um morador no mesmo apartamento, o sistema permite escolher o morador correto no registro da encomenda.
+
+- **Dashboard de pendentes:**
+  - exibe as encomendas com status "pendente",
+  - possui botão de ação para iniciar a retirada.
+
+- **Retirada de encomendas:**
+  - localiza a encomenda pelo UUID completo ou inicial
+  - exibe os dados antes da finalização
+  - quando houver mais de um morador no mesmo apartamento, permite escolher quem fez a retirada.
+
+- **Histórico e datas:**
+  - lista as encomendas registradas e retiradas, mostrando quem recebeu, quem registrou a retirada e datas formatadas de forma amigável.
+  - registros de hoje aparecem como `Hoje HH:MM`, os de ontem como `Ontem HH:MM` e os anteriores com data completa.
+
+- **Segurança e banco local:** 
+  - rotas internas protegidas por login e senhas com hash
+  - consultas usando SQLAlchemy e banco SQLite (`receba.db`) criado automaticamente na primeira execução criptografado.
 
 ## Estrutura do Projeto
 
-```
-receba/
-├── app.py              # Aplicação Flask com as rotas e lógica de negócio
-├── models.py           # Definição dos modelos (Porteiro, Morador, Encomenda) e instância do banco (SQLAlchemy)
-├── controllers.py      # Métodos que acessam o banco de dados com querys SQL.
-├── routes.py           # Endpoints que apontam para os métodos do Controllers.
-├── templates/          # Páginas HTML com Jinja2 (base, login, dashboard, registrar, retirar, histórico)
+```text
+base-receba/
+├── app.py                         # Configuração da aplicação Flask e inicialização do banco
+├── controllers.py                 # Funções de acesso e manipulação dos dados
+├── models.py                      # Modelos SQLAlchemy: Porteiro, Morador e Encomenda
+├── routes.py                      # Rotas da aplicação
+├── requirements.txt               # Dependências do projeto
+├── docs/
+│   └── images/                    # Prints usados na documentação
+│       ├── login.png
+│       ├── registrar-encomenda.png
+│       └── registrar-retirada.png
 ├── static/
-│   └── qrcodes/        # Imagens de QR Code geradas automaticamente
-└── README.md           # Este documento
+│   ├── images/                    # Imagens da interface
+│   │   ├── logo-icon.png
+│   │   └── logo.png
+│   └── style/
+│       └── style.css              # Estilos da aplicação
+├── templates/                     # Telas HTML/Jinja2 da aplicação
+│   ├── base.html
+│   ├── cadastrar_morador.html
+│   ├── cadastrar_porteiro.html
+│   ├── dashboard.html
+│   ├── historico.html
+│   ├── login.html
+│   ├── registrar.html
+│   └── retirar.html
+└── README.md
 ```
 
-## Pré‑requisitos
+## Pré-requisitos
 
-Para executar a aplicação, você precisa ter o Python 3 instalado. Além disso, instale as dependências necessárias com o `pip`:
+- Python 3 instalado.
+- `pip` instalado.
 
-```bash
-pip install flask flask_sqlalchemy qrcode pillow
-```
+## Como Executar Localmente
 
-O pacote `qrcode` utiliza o Pillow para gerar imagens PNG dos códigos QR.
-
-## Como Executar
-
-1. Faça o download ou clone este repositório.
-2. Instale as dependências conforme mostrado acima.
-3. No terminal, navegue até o diretório `receba` e execute o aplicativo:
+1. Acesse a pasta do projeto:
 
    ```bash
-   export FLASK_APP=app.py
-   flask run
+   cd base-receba
    ```
 
-   Por padrão, o Flask inicia em `http://127.0.0.1:5000/`. Acesse esta URL no seu navegador.
+2. Crie um ambiente virtual:
 
-4. Faça login com o usuário padrão:
-   * **Usuário:** `admin`
-   * **Senha:** `admin`
+   ```bash
+   python3 -m venv venv
+   ```
 
-   Após o login, utilize o menu lateral para registrar encomendas, registrar retiradas e visualizar o histórico.
+3. Ative o ambiente virtual:
+
+   No macOS/Linux:
+
+   ```bash
+   source venv/bin/activate
+   ```
+
+   No Windows:
+
+   ```bash
+   venv\Scripts\activate
+   ```
+
+4. Instale as dependências:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. Execute a aplicação:
+
+   ```bash
+   python app.py
+   ```
+
+6. Abra no navegador:
+
+   ```text
+   http://127.0.0.1:5001
+   ```
+
+7. Faça o primeiro login com:
+
+   ```text
+   Email: admin@receba.com
+   Senha: admin
+   ```
+
+8. Cadastre um novo porteiro, clique em **Sair** e entre com a nova conta para começar a registrar encomendas.
+
+## Banco de Dados
+
+O banco SQLite é criado automaticamente pelo Flask/SQLAlchemy na primeira execução da aplicação.
+
+Por padrão, a configuração usa:
+
+```python
+sqlite:///receba.db
+```
 
 ## Observações
 
-* O sistema utiliza uma base SQLite (`receba.db`) criada automaticamente no primeiro acesso.
-* O QR Code gerado para cada encomenda contém a URL de confirmação de retirada. Ao escanear esse código (por exemplo, com a câmera do celular), o morador será direcionado para a página que marca a encomenda como retirada.
-* Para um ambiente de produção, recomenda‑se alterar a `SECRET_KEY` em `app.py` e criar usuários porteiros pelo banco de dados ou via um painel de administração.
-
-## Licença
-
-Este projeto é fornecido sem garantia de funcionamento em produção. Sinta‑se livre para modificá‑lo e adaptá‑lo conforme as necessidades do seu condomínio.
+- A aplicação foi pensada para uso em computador.
+- Para produção, altere a `SECRET_KEY` em `app.py`.
+- Também é recomendado trocar a senha inicial do fluxo administrativo criando um porteiro real e evitando o uso contínuo do usuário `Admin`.

@@ -70,6 +70,9 @@ def dashboard():
 @bp.route("/registrar", methods=["GET", "POST"])
 @login_required
 def registrar_encomenda():
+    if session.get("porteiro_nome") == "Admin":
+        flash("Cadastre um porteiro, clique em sair e entre com a nova conta.", "danger")
+        return redirect(url_for("main.cadastrar_porteiro_route"))
     if request.method == "POST":
         cod = request.form.get("cod")
         empresa = request.form.get("empresa")

@@ -16,7 +16,7 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
     if not get_porteiro_by_email("admin@receba.com"):
-        create_porteiro("Porteiro padrão", "admin@receba.com", "admin")
+        create_porteiro("Admin", "admin@receba.com", "admin")
 
 app.register_blueprint(main_bp)
 

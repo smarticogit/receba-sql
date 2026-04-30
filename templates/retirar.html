@@ -32,10 +32,6 @@ Registrar Retirada - Receba
     </select>
   </div>
   {% else %}
-  <div class="form-group">
-    <label>Nome do Morador</label>
-    <div class="form-control-plaintext">{{ encomenda.morador_nome or 'Sem morador vinculado' }}</div>
-  </div>
   <input type="hidden" name="morador_nome" value="{{ encomenda.morador_nome }}" />
   {% endif %}
   <button type="submit" class="btn btn-success">Registrar Retirada</button>
